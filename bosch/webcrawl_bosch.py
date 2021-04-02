@@ -27,7 +27,7 @@ for a in range(int(endP)-int(staP)):
                 val += (daneTechh[c] + "\n")
             sheet2['b%s' % str(a+int(staP))].value = val
             add = ''
-            regex = re.compile(':\s\d+')
+            regex = re.compile(r':\s\d+')
             for m in daneTechh:
                 if regex.findall(m) == []:
                     continue
