@@ -13,7 +13,7 @@ def clean_text(text):
     text = re.sub(r"\'", "", text)
     text = re.sub(r"\"", "", text)
     text = re.sub(r'\w+\d+', "", text)
-    text = re.sub(r"w+\d+\w+", "", text)
+    text = re.sub(r"\w+\d+\w+", "", text)
     text = re.sub(r"\d+\w+", "", text)
     text = re.sub(r"\d+", "", text)
     text = text.strip().lower()
@@ -51,7 +51,7 @@ def MERGESORT(array):
     return array
 
 
-wb = openpyxl.load_workbook('Python\Test\\names.xlsx')
+wb = openpyxl.load_workbook(r'Python\\Test\\names.xlsx')
 sheet = wb.active
 all_the_words = ['']
 for a in range(2, 24902):
@@ -63,7 +63,6 @@ unique_words = set(all_the_words)
 counting_table = {}
 all_the_words.pop(0)
 for a in all_the_words:
-    print(a)
     if a in counting_table:
         counting_table[a] = counting_table[a] + 1
     else:
