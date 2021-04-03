@@ -70,7 +70,7 @@ def daneTechReturnCat_os(sku):
     return daneTechF
 
 
-# evaluation needed
+# vrode ready
 
 
 def daneTechReturnCat(sku):
@@ -80,14 +80,11 @@ def daneTechReturnCat(sku):
     soup = BeautifulSoup(content, "html.parser")
     temp = soup.find('div', class_="col-lg-8 col-xs-12")
     temp = temp.find_all('td')
-    count = 1
-    for a in temp:
-        if count % 2 == 0:
-            daneTech[0] += (a[0], " : ")
-            count += 1
-        else:
-            daneTech[0] += (a[0], "\n")
-            count += 1
+    count=2
+    for x in temp:
+        if count % 2 ==0:
+         daneTech.append(temp[temp.index(x)].get_text())
+         daneTech[temp.index(x)]=daneTech[temp.index(x)].replace('\xa0', '') 
     return daneTech
 
 
@@ -121,8 +118,19 @@ def PictureGet_os(sku):
     Pic[0] = (Picture['data-src'])
     return Pic[0]
 
+#ready
+def PictureGet_instr(sku):
+    page = sku_2_page_bosch(sku)
+    Pic = ([''])
+    Picture = dict()
+    content = page.text
+    soup = BeautifulSoup(content, "html.parser")
+    temp = soup.find("div", id= "m-media-gallery-1")
+    Picture = temp.find('img', class_='media-gallery-img lazyload')
+    Pic[0] = (Picture['data-src'])
+    return Pic[0]
 
-# ready (?)
+# ready
 
 
 def descrGet_os(sku):
@@ -137,6 +145,17 @@ def descrGet_os(sku):
         name[0] += temp[a].text
     return name
 
+def descrGet_instr(sku):
+    page = sku_2_page_bosch(sku)
+    temp = ['']
+    name = ['']
+    content = page.text
+    soup = BeautifulSoup(content, "html.parser")
+    temp = soup.find("ul", class_="m-product_hightlights__list")
+    temp = temp.find_all('li')
+    for a in range(len(temp)):
+        name[0] += temp[a].text
+    return name
 
 # ready
 
@@ -144,13 +163,28 @@ def descrGet_os(sku):
 def nameGet(sku):
     page = sku_2_page_bosch(sku)
     temp = ''
-    name = ''
     content = page.text
     soup = BeautifulSoup(content, "html.parser")
     temp = soup.find("h1", class_="headline hl1")
     temp = temp.text
     temp += " Bosch"
     return temp
+
+def nameGet_instr(sku):
+     page = sku_2_page_bosch(sku)
+     temp = ''
+     content = page.text
+     soup = BeautifulSoup(content, "html.parser")
+     temp = soup.find("h1", class_="headline hl1")
+     red = temp.find("span")
+     red=red.text
+     temp = temp.text
+     temp=temp.replace(red, "")
+     temp = temp.strip() + " Bosch"
+     return temp
+
+
+#instruments functions
 
 
 # table-based goods are working fine
