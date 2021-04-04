@@ -104,6 +104,7 @@ def daneTechReturnVal_os(sku):
 
 # ready
 
+
 def PictureGet_os(sku):
     page = sku_2_page_bosch(sku)
     Pic = ([''])
@@ -120,7 +121,10 @@ def PictureGet_os(sku):
     Pic[0] = (Picture['data-src'])
     return Pic[0]
 
+
 #ready
+
+
 def PictureGet_instr(sku):
     page = sku_2_page_bosch(sku)
     Pic = ([''])
@@ -146,6 +150,7 @@ def descrGet_os(sku):
     for a in range(len(temp)):
         name[0] += temp[a].text
     return name
+
 
 def descrGet_instr(sku):
     page = sku_2_page_bosch(sku)
