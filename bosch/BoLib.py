@@ -7,6 +7,8 @@ import time
 import inspect
 from io import StringIO
 from html.parser import HTMLParser
+import openpyxl
+import re
 
 
 # ready
@@ -144,13 +146,102 @@ def descrGet_os(sku):
 def nameGet(sku):
     page = sku_2_page_bosch(sku)
     temp = ''
-    name = ''
     content = page.text
     soup = BeautifulSoup(content, "html.parser")
     temp = soup.find("h1", class_="headline hl1")
     temp = temp.text
     temp += " Bosch"
     return temp
+
+
+# ready(not tested as a function) 
+
+
+def splitter(string, ch):
+    el_co = 0
+    elem = ['']
+    for a in string:
+        if a != ch:
+            elem[el_co] += a
+        else:
+            el_co += 1
+            elem.append('')
+    return elem
+
+
+# ready(not tested as a function) 
+
+
+def vaulter(curre):
+    vault = ['']
+    tmp = splitter(curre, '/')
+    vault[0] = tmp[0]
+    for i in range(1, len(tmp)-1):
+        vault.append(vault[i-1] + '/' + tmp[i])
+    return vault
+
+
+# ready(not tested as a function) 
+
+
+def ospsz_get(file):
+    wb = openpyxl.load_workbook(filename=file)
+    sheet_m = wb['sheet']
+    sheet2 = wb['Sheet1']
+    x = False
+    while x == False:
+        yeno = input('sleep? (y/n)')
+        if (yeno == 'y') or (yeno == 'n'):
+            x = True
+        else:
+            print('bruh')
+    staP = input('start point.. ')
+    endP = input('end point.. ')
+    count = 1
+    for a in range(int(endP)-int(staP)):
+        try:
+            sku = (sheet_m['a%s' % str(a+int(staP))].value)
+            print(sku)
+            if count_table(sku) == 1:
+                # tech info insertion
+                sheet2['a%s' % str(a+int(staP))].value = sku
+                val = ''
+                daneTechh = daneTechReturnCat_os(sku)
+                for c in range(1, len(daneTechh)):
+                    val += (daneTechh[c] + "\n")
+                sheet2['b%s' % str(a+int(staP))].value = val
+                add = ''
+                regex = re.compile(r':\s\d+')
+                for m in daneTechh:
+                    if regex.findall(m) == []:
+                        continue
+                    tmp = (regex.findall(m))
+                    for i in range(len(tmp)):
+                        tmp[i] = tmp[i].replace(': ', '')
+                        add += " " + tmp[i] + "x"
+                    add = add[:-1]
+                # picture insertion
+                sheet_m['v%s' % str(a+int(staP))].value = PictureGet_os(sku)
+                # name insertion
+                val = (nameGet(sku))
+                sheet_m['g%s' % str(a+int(staP))].value = val + add
+                print(str(a+int(staP)), " - ", sku, " done")
+            elif count_table(sku) == 0:
+                sheet_m['g%s' % str(a+int(staP))].value = 'nie ma strony'
+                print(str(sku), 'nie ma strony')
+            if count % 20 == 0:
+                wb.save('test_1.xlsx')
+                print(count, '!!SAVED!!')
+            print("count=", str(a+int(staP)))
+            count += 1
+            if yeno == 'y':
+                time.sleep(3)
+        except: 
+            sheet_m['g%s' % str(a+int(staP))].value = ('error')
+            count += 1
+            print(sku, " - error occured")
+    wb.save(file)
+    print('All done, final save')
 
 
 # table-based goods are working fine

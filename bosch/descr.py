@@ -1,4 +1,4 @@
-import daneTechniczneBosch
+import BoLib
 from bs4 import BeautifulSoup
 import requests
 import urllib.request
@@ -15,11 +15,11 @@ count = 1
 for a in range(int(endP)):
     try:
         sku = (sheet_m['a%s' % str(a+int(staP))].value)
-        if daneTechniczneBosch.count_table(sku) == 1:
-            sheet_m['b%s' % str(a+int(staP))].value = str(daneTechniczneBosch.descrGet_os(sku)[0])
+        if BoLib.count_table(sku) == 1:
+            sheet_m['b%s' % str(a+int(staP))].value = str(BoLib.descrGet_os(sku)[0])
             print(sku, " is done")
             print(count, "/", str(int(endP)))
-        elif daneTechniczneBosch.count_table(sku) == 0:
+        elif BoLib.count_table(sku) == 0:
             sheet_m['g%s' % str(a+int(staP))].value = 'nie ma strony'
             print(str(sku), 'nie ma strony')
         if count % 20 == 0:
