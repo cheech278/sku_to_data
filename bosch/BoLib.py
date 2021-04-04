@@ -257,6 +257,8 @@ def ospsz_get(file):
                     add = add[:-1]
                 # picture insertion
                 sheet_m['v%s' % str(a+int(staP))].value = PictureGet_os(sku)
+                # description insertion
+                sheet_m['b%s' % str(a+int(staP))].value = str(descrGet_os(sku)[0])
                 # name insertion
                 val = (nameGet(sku))
                 sheet_m['g%s' % str(a+int(staP))].value = val + add
