@@ -30,6 +30,4 @@ for x in range(abs(int(start) - int(end))):
         sheet1["G%s" % str(x+int(start))].value = name
     
 wb.save("test_1.xlsx")
-
-#sleep, try, output, merge with lib
         

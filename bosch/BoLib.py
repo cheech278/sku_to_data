@@ -11,17 +11,12 @@ import openpyxl
 import re
 
 
-# ready
-
 
 def sku_2_page_bosch(sku):
     URL = 'https://www.bosch-professional.com/pl/pl/searchfrontend/'
     payload = {'q': sku}
     page = requests.get(URL, params=payload)
     return page
-
-
-# ready
 
 
 def count_table(sku):
@@ -36,10 +31,7 @@ def count_table(sku):
         return 6
 
 
-# seems ready
-
-
-def daneTechReturnCat_os(sku):
+def CategoryGet_os(sku):
     daneTech = []
     page = sku_2_page_bosch(sku)
     content = page.text
@@ -72,37 +64,22 @@ def daneTechReturnCat_os(sku):
     return daneTechF
 
 
-# vrode ready
-
-
-def daneTechReturnCat(sku):
+def CategoryGet_instr(sku):
     daneTech = ['']
+    val = ''
     page = sku_2_page_bosch(sku)
     content = page.text
     soup = BeautifulSoup(content, "html.parser")
     temp = soup.find('div', class_="col-lg-8 col-xs-12")
     temp = temp.find_all('td')
-    count=2
+    count = 2
     for x in temp:
-        if count % 2 ==0:
-         daneTech.append(temp[temp.index(x)].get_text())
-         daneTech[temp.index(x)]=daneTech[temp.index(x)].replace('\xa0', '') 
-    return daneTech
-
-
-# legacy function
-
-
-def daneTechReturnVal_os(sku):
-    daneTech = []
-    page = sku_2_page_bosch(sku)
-    content = page.text
-    soup = BeautifulSoup(content, "html.parser")
-    daneTech = soup.table.find('tr', id=sku)
-    return daneTech
-
-
-# ready
+        if count % 2 == 0:
+            daneTech.append(temp[temp.index(x)].get_text())
+        daneTech[temp.index(x)]=daneTech[temp.index(x)].replace('\xa0', '') 
+    for c in range(1,len(daneTech)-1,2):
+        val += str(daneTech[c]) + ' : ' + str(daneTech[c+1]) + '\n'
+    return val
 
 
 def PictureGet_os(sku):
@@ -122,9 +99,6 @@ def PictureGet_os(sku):
     return Pic[0]
 
 
-#ready
-
-
 def PictureGet_instr(sku):
     page = sku_2_page_bosch(sku)
     Pic = ([''])
@@ -135,8 +109,6 @@ def PictureGet_instr(sku):
     Picture = temp.find('img', class_='media-gallery-img lazyload')
     Pic[0] = (Picture['data-src'])
     return Pic[0]
-
-# ready
 
 
 def descrGet_os(sku):
@@ -164,8 +136,6 @@ def descrGet_instr(sku):
         name[0] += temp[a].text
     return name
 
-# ready
-
 
 def nameGet(sku):
     page = sku_2_page_bosch(sku)
@@ -176,6 +146,7 @@ def nameGet(sku):
     temp = temp.text
     temp += " Bosch"
     return temp
+
 
 def nameGet_instr(sku):
      page = sku_2_page_bosch(sku)
@@ -191,12 +162,6 @@ def nameGet_instr(sku):
      return temp
 
 
-#instruments functions
-
-
-# ready(not tested as a function) 
-
-
 def splitter(string, ch):
     el_co = 0
     elem = ['']
@@ -209,9 +174,6 @@ def splitter(string, ch):
     return elem
 
 
-# ready(not tested as a function) 
-
-
 def vaulter(curre):
     vault = ['']
     tmp = splitter(curre, '/')
@@ -219,9 +181,6 @@ def vaulter(curre):
     for i in range(1, len(tmp)-1):
         vault.append(vault[i-1] + '/' + tmp[i])
     return vault
-
-
-# ready(not tested as a function) 
 
 
 def ospsz_get(file):
@@ -246,7 +205,7 @@ def ospsz_get(file):
                 # tech info insertion
                 sheet2['a%s' % str(a+int(staP))].value = sku
                 val = ''
-                daneTechh = daneTechReturnCat_os(sku)
+                daneTechh = CategoryGet_os(sku)
                 for c in range(1, len(daneTechh)):
                     val += (daneTechh[c] + "\n")
                 sheet2['b%s' % str(a+int(staP))].value = val
@@ -286,5 +245,45 @@ def ospsz_get(file):
     print('All done, final save')
 
 
+def tool_get(file)
+    wb = openpyxl.load_workbook(filename = file)
+    sheet1 = wb['sheet']
+    sheet2 = wb['Sheet1']
+    start = input("Start from ...")
+    end = input("End on ...")
+    x = False
+    while x == False:
+        yeno = input('sleep? (y/n)')
+        if (yeno == 'y') or (yeno == 'n'):
+            x = True
+        else:
+            print('bruh')
+    for x in range(abs(int(start) - int(end))):
+        try:
+            sku = (sheet1["A%s" % str(x + int(start))].value)
+            count = 0
+            if count_table(sku) == 0:
+                print (str(sku) + "not found")
+            elif count_table(sku) > 0:
+                descr = str(descrGet(sku)[0])
+                pic = PictureGet(sku)
+                daneTech = daneTechReturnCat(sku)
+                name = str(nameGet(sku))
+                sheet2['a%s' % str(a + int(start))].value = sku
+                sheet2["B%s" % str(x + int(start))].value = daneTech
+                sheet1["v%s" % str(x + int(start))].value = pic
+                sheet1["D%s" % str(x + int(start))].value = descr
+                sheet1["G%s" % str(x + int(start))].value = name
+                count += 1
+                print(sku + "DONE, next")
+            if count % 5 == 0:
+                wb.save(file)
+                print ("Saved on " + sku)
+        except:
+            print(sku + " errored")
+    if yeno == 'y':
+        time.sleep(2)
+    wb.save(file)
+
 # table-based goods are working fine
-# tools and stuff aren't developed
+# tools and stuff gotta be evaluated
